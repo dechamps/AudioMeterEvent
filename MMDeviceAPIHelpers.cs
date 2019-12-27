@@ -24,6 +24,11 @@
             }
         }
 
+        public static string Id(this MMDeviceAPI.IMMDevice device) {
+            device.GetId(out var id);
+            return id;
+        }
+
         public static MMDeviceAPI.IPropertyStore GetPropertyStore(this MMDeviceAPI.IMMDevice device, uint sgtmAccess)
         {
             device.OpenPropertyStore(MMDeviceAPIHelpers.STGM_READ, out var propertyStore);
