@@ -19,8 +19,17 @@ namespace AudioMeterEvent
 
         static void Run(Options options)
         {
-            System.Console.WriteLine(new MMDeviceAPI.MMDeviceEnumerator()
-                .GetDeviceById(options.AudioDeviceId).Id());
+            var deviceEnumerator = new MMDeviceAPI.MMDeviceEnumerator();
+            MMDeviceAPI.IMMDevice device;
+            try
+            {
+                device = deviceEnumerator.GetDeviceById(options.AudioDeviceId);
+            }
+            catch (System.Exception exception)
+            {
+                throw new System.Exception("Unable to get audio device using specified ID", exception);
+            }
+            System.Console.WriteLine(device.Id());
         }
     }
 }
