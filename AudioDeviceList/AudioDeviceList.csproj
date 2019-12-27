@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MMDeviceAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>bin\$(Configuration)\MMDeviceAPI.dll</HintPath>
+      <HintPath>$(SolutionDir)\MMDeviceAPI\bin\$(Configuration)\MMDeviceAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
