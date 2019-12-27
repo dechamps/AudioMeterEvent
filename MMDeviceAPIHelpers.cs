@@ -10,42 +10,36 @@
 
         public static MMDeviceAPI.IMMDeviceCollection GetDeviceCollection(this MMDeviceAPI.MMDeviceEnumerator deviceEnumerator, MMDeviceAPI.EDataFlow dataFlow, uint stateMask)
         {
-            MMDeviceAPI.IMMDeviceCollection deviceCollection;
-            deviceEnumerator.EnumAudioEndpoints(dataFlow, stateMask, out deviceCollection);
+            deviceEnumerator.EnumAudioEndpoints(dataFlow, stateMask, out var deviceCollection);
             return deviceCollection;
         }
 
         public static System.Collections.Generic.IEnumerable<MMDeviceAPI.IMMDevice> GetDevices(this MMDeviceAPI.IMMDeviceCollection deviceCollection)
         {
-            uint deviceCount;
-            deviceCollection.GetCount(out deviceCount);
+            deviceCollection.GetCount(out var deviceCount);
             for (uint deviceIndex = 0; deviceIndex < deviceCount; ++deviceIndex)
             {
-                MMDeviceAPI.IMMDevice device;
-                deviceCollection.Item(deviceIndex, out device);
+                deviceCollection.Item(deviceIndex, out var device);
                 yield return device;
             }
         }
 
         public static MMDeviceAPI.IPropertyStore GetPropertyStore(this MMDeviceAPI.IMMDevice device, uint sgtmAccess)
         {
-            MMDeviceAPI.IPropertyStore propertyStore;
-            device.OpenPropertyStore(MMDeviceAPIHelpers.STGM_READ, out propertyStore);
+            device.OpenPropertyStore(MMDeviceAPIHelpers.STGM_READ, out var propertyStore);
             return propertyStore;
         }
 
         public static object Get(this MMDeviceAPI.IPropertyStore propertyStore, MMDeviceAPI._tagpropertykey propertyKey)
         {
-            MMDeviceAPI.tag_inner_PROPVARIANT propvariant;
-            propertyStore.GetValue(MMDeviceAPIHelpers.PKEY_Device_FriendlyName, out propvariant);
+            propertyStore.GetValue(MMDeviceAPIHelpers.PKEY_Device_FriendlyName, out var propvariant);
             return propvariant.ToObject();
         }
 
         static object ToObject(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             var marshalledPropvariant = propvariant.Marshall();
-            object variant;
-            PropVariantToVariant(ref marshalledPropvariant, out variant);
+            PropVariantToVariant(ref marshalledPropvariant, out var variant);
             PropVariantClear(ref marshalledPropvariant);
             return variant;
         }
