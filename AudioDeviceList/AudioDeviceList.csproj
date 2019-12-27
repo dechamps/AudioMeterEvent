@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C5244AFB-F6C0-4F9E-B88B-9E39966ABD21}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AutoSpeakers</RootNamespace>
+    <RootNamespace>AudioMeterEvent</RootNamespace>
     <AssemblyName>AudioDevicesList</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,7 +50,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>AutoSpeakers.AudioDeviceList</StartupObject>
+    <StartupObject>AudioMeterEvent.AudioDeviceList</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AudioDeviceList.cs" />

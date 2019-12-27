@@ -1,4 +1,4 @@
-﻿namespace AutoSpeakers
+﻿namespace AudioMeterEvent
 {
     static class AudioDeviceList
     {

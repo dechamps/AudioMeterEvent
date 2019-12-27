@@ -1,4 +1,4 @@
-﻿namespace AutoSpeakers
+﻿namespace AudioMeterEvent
 {
     public static class MMDeviceAPIHelpers
     {
