@@ -5,7 +5,7 @@
         static void Main()
         {
             foreach (var device in new MMDeviceAPI.MMDeviceEnumerator()
-                .GetDeviceCollection(MMDeviceAPI.EDataFlow.eRender, MMDeviceAPIHelpers.DEVICE_STATE_ACTIVE)
+                .GetDeviceCollection(MMDeviceAPI.EDataFlow.eAll, MMDeviceAPIHelpers.DEVICE_STATE_ACTIVE)
                 .GetDevices())
                 System.Console.WriteLine(device.Id() + " " + device
                     .GetPropertyStore(MMDeviceAPIHelpers.STGM_READ)
