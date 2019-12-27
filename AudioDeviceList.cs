@@ -10,7 +10,6 @@
                 System.Console.WriteLine(device.Id() + " " + device
                     .GetPropertyStore(MMDeviceAPIHelpers.STGM_READ)
                     .Get(MMDeviceAPIHelpers.PKEY_Device_FriendlyName));
-            System.Console.ReadLine();
         }
     }
 }
