@@ -57,9 +57,8 @@
     <Compile Include="MMDeviceAPIHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MMDeviceAPILib">
-      <HintPath>.\MMDeviceAPILib.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+    <Reference Include="MMDeviceAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>bin\$(Configuration)\MMDeviceAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,2 @@
+// Mirror the contents of the file from the Windows SDK.
+#include <mmdeviceapi.idl>

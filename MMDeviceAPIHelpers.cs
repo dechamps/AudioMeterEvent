@@ -6,9 +6,9 @@
         public const uint STGM_READ = 0;
 
         // From functiondiscoverykeys_devpkey.h
-        public static readonly MMDeviceAPILib._tagpropertykey PKEY_Device_FriendlyName = new MMDeviceAPILib._tagpropertykey { fmtid = new System.Guid(0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0), pid = 14 };
+        public static readonly MMDeviceAPI._tagpropertykey PKEY_Device_FriendlyName = new MMDeviceAPI._tagpropertykey { fmtid = new System.Guid(0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0), pid = 14 };
 
-        public static object GetObjectForPropvariant(MMDeviceAPILib.tag_inner_PROPVARIANT propvariant)
+        public static object GetObjectForPropvariant(MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             var marshalledPropvariant = MarshallPropvariant(propvariant);
             object variant;
@@ -17,7 +17,7 @@
             return variant;
         }
 
-        static Propvariant MarshallPropvariant(MMDeviceAPILib.tag_inner_PROPVARIANT propvariant)
+        static Propvariant MarshallPropvariant(MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             // Note: it seems unlikely this will work with complicated/exotic PROPVARIANT types.
             var marshalledPropvariant = new Propvariant();
@@ -35,7 +35,7 @@
 
         // Unmanaged memory layout for a PROPVARIANT.
         // From https://blogs.msdn.microsoft.com/adamroot/2008/04/11/interop-with-propvariants-in-net/
-        // Note that MMDeviceAPILib.tag_inner_PROPVARIANT has a completely different memory layout because it is the result of COM interop unmarshalling.
+        // Note that MMDeviceAPI.tag_inner_PROPVARIANT has a completely different memory layout because it is the result of COM interop unmarshalling.
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         struct Propvariant
         {
