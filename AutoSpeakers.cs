@@ -19,7 +19,7 @@
 
                 MMDeviceAPI.tag_inner_PROPVARIANT propvariant;
                 propertyStore.GetValue(MMDeviceAPIHelpers.PKEY_Device_FriendlyName, out propvariant);
-                System.Console.WriteLine(MMDeviceAPIHelpers.GetObjectForPropvariant(propvariant).ToString());
+                System.Console.WriteLine(propvariant.ToObject().ToString());
             }
             System.Console.ReadLine();
         }

@@ -8,16 +8,16 @@
         // From functiondiscoverykeys_devpkey.h
         public static readonly MMDeviceAPI._tagpropertykey PKEY_Device_FriendlyName = new MMDeviceAPI._tagpropertykey { fmtid = new System.Guid(0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0), pid = 14 };
 
-        public static object GetObjectForPropvariant(MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
+        public static object ToObject(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
-            var marshalledPropvariant = MarshallPropvariant(propvariant);
+            var marshalledPropvariant = propvariant.Marshall();
             object variant;
             PropVariantToVariant(ref marshalledPropvariant, out variant);
             PropVariantClear(ref marshalledPropvariant);
             return variant;
         }
 
-        static Propvariant MarshallPropvariant(MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
+        static Propvariant Marshall(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             // Note: it seems unlikely this will work with complicated/exotic PROPVARIANT types.
             var marshalledPropvariant = new Propvariant();
