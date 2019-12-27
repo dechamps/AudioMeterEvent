@@ -1,6 +1,6 @@
 ﻿namespace AutoSpeakers
 {
-    static class AutoSpeakers
+    static class AudioDeviceList
     {
         static void Main()
         {

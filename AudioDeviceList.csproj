@@ -7,7 +7,7 @@
     <ProjectGuid>{C5244AFB-F6C0-4F9E-B88B-9E39966ABD21}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>AutoSpeakers</RootNamespace>
-    <AssemblyName>AutoSpeakers</AssemblyName>
+    <AssemblyName>AudioDevicesList</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -50,10 +50,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>AutoSpeakers.AutoSpeakers</StartupObject>
+    <StartupObject>AutoSpeakers.AudioDeviceList</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AutoSpeakers.cs" />
+    <Compile Include="AudioDeviceList.cs" />
     <Compile Include="MMDeviceAPIHelpers.cs" />
   </ItemGroup>
   <ItemGroup>

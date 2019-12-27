@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSpeakers", "AutoSpeakers.csproj", "{C5244AFB-F6C0-4F9E-B88B-9E39966ABD21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioDeviceList", "AudioDeviceList.csproj", "{C5244AFB-F6C0-4F9E-B88B-9E39966ABD21}"
 	ProjectSection(ProjectDependencies) = postProject
 		{14156E9F-650A-47DE-B458-B6B7EEA0E0C0} = {14156E9F-650A-47DE-B458-B6B7EEA0E0C0}
 	EndProjectSection
