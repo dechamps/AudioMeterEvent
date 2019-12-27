@@ -1,6 +1,6 @@
 ﻿namespace AutoSpeakers
 {
-    class AutoSpeakers
+    static class AutoSpeakers
     {
         static void Main()
         {

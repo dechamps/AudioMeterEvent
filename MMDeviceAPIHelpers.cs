@@ -1,6 +1,6 @@
 ﻿namespace AutoSpeakers
 {
-    class MMDeviceAPIHelpers
+    static class MMDeviceAPIHelpers
     {
         public const uint DEVICE_STATE_ACTIVE = 1;
         public const uint STGM_READ = 0;
