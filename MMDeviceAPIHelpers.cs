@@ -8,7 +8,40 @@
         // From functiondiscoverykeys_devpkey.h
         public static readonly MMDeviceAPI._tagpropertykey PKEY_Device_FriendlyName = new MMDeviceAPI._tagpropertykey { fmtid = new System.Guid(0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0), pid = 14 };
 
-        public static object ToObject(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
+        public static MMDeviceAPI.IMMDeviceCollection GetDeviceCollection(this MMDeviceAPI.MMDeviceEnumerator deviceEnumerator, MMDeviceAPI.EDataFlow dataFlow, uint stateMask)
+        {
+            MMDeviceAPI.IMMDeviceCollection deviceCollection;
+            deviceEnumerator.EnumAudioEndpoints(dataFlow, stateMask, out deviceCollection);
+            return deviceCollection;
+        }
+
+        public static System.Collections.Generic.IEnumerable<MMDeviceAPI.IMMDevice> GetDevices(this MMDeviceAPI.IMMDeviceCollection deviceCollection)
+        {
+            uint deviceCount;
+            deviceCollection.GetCount(out deviceCount);
+            for (uint deviceIndex = 0; deviceIndex < deviceCount; ++deviceIndex)
+            {
+                MMDeviceAPI.IMMDevice device;
+                deviceCollection.Item(deviceIndex, out device);
+                yield return device;
+            }
+        }
+
+        public static MMDeviceAPI.IPropertyStore GetPropertyStore(this MMDeviceAPI.IMMDevice device, uint sgtmAccess)
+        {
+            MMDeviceAPI.IPropertyStore propertyStore;
+            device.OpenPropertyStore(MMDeviceAPIHelpers.STGM_READ, out propertyStore);
+            return propertyStore;
+        }
+
+        public static object Get(this MMDeviceAPI.IPropertyStore propertyStore, MMDeviceAPI._tagpropertykey propertyKey)
+        {
+            MMDeviceAPI.tag_inner_PROPVARIANT propvariant;
+            propertyStore.GetValue(MMDeviceAPIHelpers.PKEY_Device_FriendlyName, out propvariant);
+            return propvariant.ToObject();
+        }
+
+        static object ToObject(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             var marshalledPropvariant = propvariant.Marshall();
             object variant;
