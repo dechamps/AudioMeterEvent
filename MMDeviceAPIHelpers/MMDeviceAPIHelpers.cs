@@ -8,6 +8,12 @@
         // From functiondiscoverykeys_devpkey.h
         public static readonly MMDeviceAPI._tagpropertykey PKEY_Device_FriendlyName = new MMDeviceAPI._tagpropertykey { fmtid = new System.Guid(0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0), pid = 14 };
 
+        public static MMDeviceAPI.IMMDevice GetDeviceById(this MMDeviceAPI.MMDeviceEnumerator deviceEnumerator, string deviceId)
+        {
+            deviceEnumerator.GetDevice(deviceId, out var device);
+            return device;
+        }
+
         public static MMDeviceAPI.IMMDeviceCollection GetDeviceCollection(this MMDeviceAPI.MMDeviceEnumerator deviceEnumerator, MMDeviceAPI.EDataFlow dataFlow, uint stateMask)
         {
             deviceEnumerator.EnumAudioEndpoints(dataFlow, stateMask, out var deviceCollection);
