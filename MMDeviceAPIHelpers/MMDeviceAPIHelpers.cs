@@ -1,4 +1,10 @@
-﻿namespace AudioMeterEvent
+﻿[assembly: System.Reflection.AssemblyTitle("MMDeviceAPIHelpers")]
+[assembly: System.Reflection.AssemblyDescription("Convenience helpers for dealing with IMMDevice and related APIs")]
+[assembly: System.Reflection.AssemblyProduct("AudioMeterEvent")]
+[assembly: System.Reflection.AssemblyCompany("Etienne Dechamps")]
+[assembly: System.Reflection.AssemblyCopyright("Etienne Dechamps <etienne@edechamps.fr>")]
+
+namespace AudioMeterEvent
 {
     public static class MMDeviceAPIHelpers
     {
