@@ -36,6 +36,9 @@
     <Compile Include="AudioMeterEvent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="EndpointVolume">
+      <HintPath>$(SolutionDir)\EndpointVolume\bin\$(Configuration)\EndpointVolume.dll</HintPath>
+    </Reference>
     <Reference Include="MMDeviceAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\MMDeviceAPI\bin\$(Configuration)\MMDeviceAPI.dll</HintPath>
     </Reference>

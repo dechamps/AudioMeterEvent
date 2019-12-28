@@ -1,0 +1,7 @@
+// Mirror the contents of the file from the Windows SDK.
+#include <endpointvolume.idl>
+
+[uuid(25EFEB53-97A2-488A-85E4-BFE1D6EC42C0)]
+library EndpointVolumeLib {
+	interface IAudioMeterInformation;
+}

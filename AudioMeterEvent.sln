@@ -18,7 +18,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioMeterEvent", "AudioMeterEvent\AudioMeterEvent.csproj", "{6B208D64-F617-460B-A3CA-01C2D273E264}"
 	ProjectSection(ProjectDependencies) = postProject
 		{14156E9F-650A-47DE-B458-B6B7EEA0E0C0} = {14156E9F-650A-47DE-B458-B6B7EEA0E0C0}
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61} = {FB9528FD-A8C0-45D6-A400-AF17D9660F61}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EndpointVolume", "EndpointVolume\EndpointVolume.vcxproj", "{FB9528FD-A8C0-45D6-A400-AF17D9660F61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +80,16 @@ Global
 		{6B208D64-F617-460B-A3CA-01C2D273E264}.Release|x64.Build.0 = Release|Any CPU
 		{6B208D64-F617-460B-A3CA-01C2D273E264}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B208D64-F617-460B-A3CA-01C2D273E264}.Release|x86.Build.0 = Release|Any CPU
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Debug|x64.ActiveCfg = Debug|x64
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Debug|x64.Build.0 = Debug|x64
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Debug|x86.ActiveCfg = Debug|Win32
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Debug|x86.Build.0 = Debug|Win32
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Release|Any CPU.ActiveCfg = Release|Win32
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Release|x64.ActiveCfg = Release|x64
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Release|x64.Build.0 = Release|x64
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Release|x86.ActiveCfg = Release|Win32
+		{FB9528FD-A8C0-45D6-A400-AF17D9660F61}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

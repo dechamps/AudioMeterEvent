@@ -1,4 +1,6 @@
-﻿[assembly: System.Reflection.AssemblyTitle("MMDeviceAPIHelpers")]
+﻿using System.Reflection;
+
+[assembly: System.Reflection.AssemblyTitle("MMDeviceAPIHelpers")]
 [assembly: System.Reflection.AssemblyDescription("Convenience helpers for dealing with IMMDevice and related APIs")]
 [assembly: System.Reflection.AssemblyProduct("AudioMeterEvent")]
 [assembly: System.Reflection.AssemblyCompany("Etienne Dechamps")]
@@ -53,6 +55,24 @@ namespace AudioMeterEvent
             return propvariant.ToObject();
         }
 
+        public static T ActivateInterface<T>(this MMDeviceAPI.IMMDevice device) where T : class
+        {
+            var guid = new System.Guid(typeof(T).GetCustomAttribute<System.Runtime.InteropServices.GuidAttribute>(false).Value);
+            // Normally we're supposed to pass NULL as pActivationParams but C# won't let us pass null to a ref struct argument. Passing an empty PROPVARIANT seems to work fine.
+            var activationParams = new MMDeviceAPI.tag_inner_PROPVARIANT();
+            device.Activate(ref guid, (uint) CLSCTX.CLSCTX_ALL, ref activationParams, out var interfacePtr);
+            object iface;
+            try
+            {
+                iface = System.Runtime.InteropServices.Marshal.GetTypedObjectForIUnknown(interfacePtr, typeof(T));
+            }
+            finally
+            {
+                System.Runtime.InteropServices.Marshal.Release(interfacePtr);
+            }
+            return iface as T;
+        }
+
         static object ToObject(this MMDeviceAPI.tag_inner_PROPVARIANT propvariant)
         {
             var marshalledPropvariant = propvariant.Marshall();
@@ -89,6 +109,35 @@ namespace AudioMeterEvent
             ushort wReserved3;
             public System.IntPtr p;
             int p2;
+        }
+
+        // https://www.pinvoke.net/default.aspx/Enums/CLSCTX.html
+        [System.Flags]
+        enum CLSCTX : uint
+        {
+            CLSCTX_INPROC_SERVER = 0x1,
+            CLSCTX_INPROC_HANDLER = 0x2,
+            CLSCTX_LOCAL_SERVER = 0x4,
+            CLSCTX_INPROC_SERVER16 = 0x8,
+            CLSCTX_REMOTE_SERVER = 0x10,
+            CLSCTX_INPROC_HANDLER16 = 0x20,
+            CLSCTX_RESERVED1 = 0x40,
+            CLSCTX_RESERVED2 = 0x80,
+            CLSCTX_RESERVED3 = 0x100,
+            CLSCTX_RESERVED4 = 0x200,
+            CLSCTX_NO_CODE_DOWNLOAD = 0x400,
+            CLSCTX_RESERVED5 = 0x800,
+            CLSCTX_NO_CUSTOM_MARSHAL = 0x1000,
+            CLSCTX_ENABLE_CODE_DOWNLOAD = 0x2000,
+            CLSCTX_NO_FAILURE_LOG = 0x4000,
+            CLSCTX_DISABLE_AAA = 0x8000,
+            CLSCTX_ENABLE_AAA = 0x10000,
+            CLSCTX_FROM_DEFAULT_CONTEXT = 0x20000,
+            CLSCTX_ACTIVATE_32_BIT_SERVER = 0x40000,
+            CLSCTX_ACTIVATE_64_BIT_SERVER = 0x80000,
+            CLSCTX_INPROC = CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER,
+            CLSCTX_SERVER = CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER,
+            CLSCTX_ALL = CLSCTX_SERVER | CLSCTX_INPROC_HANDLER
         }
     }
 }
