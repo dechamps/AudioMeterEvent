@@ -36,6 +36,8 @@
     <Compile Include="AudioMeter.cs" />
     <Compile Include="AudioMeterEventEntryPoint.cs" />
     <Compile Include="AudioMeterEvent.cs" />
+    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="Logger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EndpointVolume">
@@ -45,6 +47,7 @@
       <HintPath>$(SolutionDir)\MMDeviceAPI\bin\$(Configuration)\MMDeviceAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ServiceProcess" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CommandLine, Version=2.6.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">

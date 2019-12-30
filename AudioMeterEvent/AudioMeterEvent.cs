@@ -15,13 +15,16 @@ namespace AudioMeterEvent
             public UsageException(string message) : base(message) { }
         }
 
-        public AudioMeterEvent(string[] args)
+        public AudioMeterEvent(string[] args, Logger logger)
         {
+            this.logger = logger;
             var helpWriter = new System.IO.StringWriter();
             new Parser(config => config.HelpWriter = helpWriter).ParseArguments<Options>(args)
                 .WithParsed<Options>((Options options) => { Run(options); })
                 .WithNotParsed<Options>(errors => { throw new UsageException(helpWriter.ToString()); });
         }
+
+        readonly Logger logger;
 
         void Run(Options options)
         {
@@ -38,7 +41,7 @@ namespace AudioMeterEvent
 
             new AudioMeter(device.ActivateInterface<EndpointVolume.IAudioMeterInformation>()).SoundDetected += (object sender, System.EventArgs eventArgs) =>
             {
-                System.Console.WriteLine("Sound detected");
+               logger.Log("Sound detected");
             };
 
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);

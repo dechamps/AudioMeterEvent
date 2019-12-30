@@ -12,7 +12,7 @@ namespace AudioMeterEvent
         {
             try
             {
-                new AudioMeterEvent(args);
+                new AudioMeterEvent(args, new ConsoleLogger());
             } catch (AudioMeterEvent.UsageException usageException)
             {
                 System.Console.Error.WriteLine(usageException.Message);
