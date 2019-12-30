@@ -15,7 +15,7 @@ namespace AudioMeterEvent
             public UsageException(string message) : base(message) { }
         }
 
-        public AudioMeterEvent(string[] args, Logger logger)
+        public AudioMeterEvent(System.Collections.Generic.IEnumerable<string> args, Logger logger)
         {
             this.logger = logger;
             var helpWriter = new System.IO.StringWriter();
