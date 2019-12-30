@@ -36,8 +36,12 @@ namespace AudioMeterEvent
                 throw new System.Exception("Unable to get audio device using specified ID", exception);
             }
 
-            device.ActivateInterface<EndpointVolume.IAudioMeterInformation>().GetPeakValue(out var peakValue);
-            System.Console.WriteLine(peakValue);
+            new AudioMeter(device.ActivateInterface<EndpointVolume.IAudioMeterInformation>()).SoundDetected += (object sender, System.EventArgs eventArgs) =>
+            {
+                System.Console.WriteLine("Sound detected");
+            };
+
+            System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
         }
     }
 }
