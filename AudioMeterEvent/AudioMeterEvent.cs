@@ -1,14 +1,8 @@
 ﻿using CommandLine;
 
-[assembly: System.Reflection.AssemblyTitle("AudioMeterEvent")]
-[assembly: System.Reflection.AssemblyDescription("Takes action in response to changes in audio level")]
-[assembly: System.Reflection.AssemblyProduct("AudioMeterEvent")]
-[assembly: System.Reflection.AssemblyCompany("Etienne Dechamps")]
-[assembly: System.Reflection.AssemblyCopyright("Etienne Dechamps <etienne@edechamps.fr>")]
-
 namespace AudioMeterEvent
 {
-    static class AudioMeterEvent
+    sealed class AudioMeterEvent
     {
         class Options
         {
@@ -16,14 +10,20 @@ namespace AudioMeterEvent
             public string AudioDeviceId { get; set; }
         }
 
-        static int Main(string[] args)
+        public class UsageException: System.Exception
         {
-            return Parser.Default.ParseArguments<Options>(args).MapResult(
-                (Options options) => { Run(options); return 0; },
-                errors => 1);
+            public UsageException(string message) : base(message) { }
         }
 
-        static void Run(Options options)
+        public AudioMeterEvent(string[] args)
+        {
+            var helpWriter = new System.IO.StringWriter();
+            new Parser(config => config.HelpWriter = helpWriter).ParseArguments<Options>(args)
+                .WithParsed<Options>((Options options) => { Run(options); })
+                .WithNotParsed<Options>(errors => { throw new UsageException(helpWriter.ToString()); });
+        }
+
+        void Run(Options options)
         {
             var deviceEnumerator = new MMDeviceAPI.MMDeviceEnumerator();
             MMDeviceAPI.IMMDevice device;
