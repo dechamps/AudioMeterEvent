@@ -10,9 +10,17 @@ namespace AudioMeterEvent
     {
         static void Main()
         {
+            System.Console.WriteLine("Render devices:");
+            DisplayDevices(MMDeviceAPI.EDataFlow.eRender);
+            System.Console.WriteLine("Capture devices:");
+            DisplayDevices(MMDeviceAPI.EDataFlow.eCapture);
+        }
+
+        static void DisplayDevices(MMDeviceAPI.EDataFlow dataFlow)
+        {
             foreach (var device in new MMDeviceAPI.MMDeviceEnumerator()
-                .GetDeviceCollection(MMDeviceAPI.EDataFlow.eAll, MMDeviceAPIHelpers.DEVICE_STATE_ACTIVE)
-                .GetDevices())
+               .GetDeviceCollection(dataFlow, MMDeviceAPIHelpers.DEVICE_STATE_ACTIVE)
+               .GetDevices())
                 System.Console.WriteLine(device.Id() + " " + device
                     .GetPropertyStore(MMDeviceAPIHelpers.STGM_READ)
                     .Get(MMDeviceAPIHelpers.PKEY_Device_FriendlyName));
