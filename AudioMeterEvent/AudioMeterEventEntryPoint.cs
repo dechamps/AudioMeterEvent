@@ -91,6 +91,7 @@ namespace AudioMeterEvent
 
             System.ServiceProcess.ServiceInstaller serviceInstaller = new System.ServiceProcess.ServiceInstaller();
             serviceInstaller.ServiceName = "AudioMeterEvent";
+            serviceInstaller.Description = "Raises events based on audio device meter levels.";
             Installers.Add(serviceInstaller);
         }
 
