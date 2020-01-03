@@ -19,10 +19,11 @@ namespace AudioMeterEvent
             public UsageException(string message) : base(message) { }
         }
 
-        public static Options Parse(System.Collections.Generic.IEnumerable<string> args)
+        public static Options Parse(System.Collections.Generic.IEnumerable<string> args, bool ignoreUnknownArguments = false)
         {
             var helpWriter = new System.IO.StringWriter();
-            return new Parser(config => config.HelpWriter = helpWriter).ParseArguments<Options>(args).MapResult(
+            return new Parser(config => { config.HelpWriter = helpWriter; config.IgnoreUnknownArguments = ignoreUnknownArguments; })
+                .ParseArguments<Options>(args).MapResult(
                 options => options,
                 _ => throw new UsageException(helpWriter.ToString()));
         }
@@ -33,11 +34,8 @@ namespace AudioMeterEvent
         static int Main(string[] argsArray)
         {
             System.Collections.Generic.IEnumerable<string> args = argsArray;
-            if (GetConsoleMode(ref args)) {
-                System.ServiceProcess.ServiceBase.Run(new Service(args));
-                return 0;
-            }
-
+            bool consoleMode = GetConsoleMode(ref args);
+            
             Options options;
             try
             {
@@ -47,22 +45,26 @@ namespace AudioMeterEvent
                 System.Console.Error.WriteLine(usageException.Message);
                 return 1;
             }
-            new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+
+            if (consoleMode)
+                new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+            else
+                System.ServiceProcess.ServiceBase.Run(new Service(options));
+            
             return 0;
         }
 
         sealed class Service : System.ServiceProcess.ServiceBase
         {
-            public Service(System.Collections.Generic.IEnumerable<string> args)
+            public Service(Options options)
             {
-                this.args = args;
+                this.options = options;
             }
 
-            readonly System.Collections.Generic.IEnumerable<string> args;
+            readonly Options options;
 
             protected override void OnStart(string[] args)
             {
-                var options = Options.Parse(args);
                 new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
             }
         }
@@ -72,9 +74,48 @@ namespace AudioMeterEvent
             if (args.Take(1).SequenceEqual(new string[] { "service" }))
             {
                 args = args.Skip(1);
-                return true;
+                return false;
             }
-            return false;
+            return true;
+        }
+    }
+
+    [System.ComponentModel.RunInstaller(true)]
+    public class Installer : System.Configuration.Install.Installer
+    {
+        public Installer()
+        {
+            System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
+            serviceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalService;
+            Installers.Add(serviceProcessInstaller);
+
+            System.ServiceProcess.ServiceInstaller serviceInstaller = new System.ServiceProcess.ServiceInstaller();
+            serviceInstaller.ServiceName = "AudioMeterEvent";
+            Installers.Add(serviceInstaller);
+        }
+
+        protected override void OnBeforeInstall(System.Collections.IDictionary savedState)
+        {
+            var args = new System.Collections.Generic.List<string>();
+            foreach (System.Collections.DictionaryEntry keyValue in Context.Parameters)
+            {
+                if (keyValue.Value == null) continue;
+                var key = keyValue.Key.ToString();
+                // When "--foo=bar" is specified, InstallUtil only strips the first "-", resulting in "-foo=bar". If that happens, get rid of the leading dash.
+                if (key.StartsWith("-")) key = key.Substring(1);
+                args.Add("--" + key);
+                args.Add(keyValue.Value.ToString());
+            }
+            Context.Parameters["assemblypath"] = QuoteCommandLineArgument(Context.Parameters["assemblypath"]) + " service " + Parser.Default.FormatCommandLine(
+                Options.Parse(args,
+                    // Ignore InstallUtil parameters such as "assemblypath"
+                    ignoreUnknownArguments: true));
+        }
+
+        string QuoteCommandLineArgument(string arg)
+        {
+            // https://stackoverflow.com/a/6040946/172594
+            return "\"" + System.Text.RegularExpressions.Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
         }
     }
 }

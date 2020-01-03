@@ -1,5 +1,5 @@
 # Install as a service
 
 ```
-sc.exe create AudioMeterEvent binPath= "C:\Path\To\AudioMeterEvent.exe service foo" obj= "NT AUTHORITY\LocalService"
+C:\Windows\Microsoft.NET\Framework\v4.0.*\InstallUtil.exe --audio-device-id=foo "C:\Path\To\AudioMeterEvent.exe"
 ```
