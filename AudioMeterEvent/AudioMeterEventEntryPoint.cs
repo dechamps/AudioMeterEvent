@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CommandLine;
+﻿using CommandLine;
 
 [assembly: System.Reflection.AssemblyTitle("AudioMeterEvent")]
 [assembly: System.Reflection.AssemblyDescription("Takes action in response to changes in audio level")]
@@ -13,6 +12,9 @@ namespace AudioMeterEvent
     {
         [Option("audio-device-id", Required = true)]
         public string AudioDeviceId { get; set; }
+
+        [Option("service", Hidden = true)]
+        public bool Service { get; set; }
 
         public class UsageException : System.Exception
         {
@@ -31,11 +33,8 @@ namespace AudioMeterEvent
 
     static class AudioMeterEventEntryPoint
     {
-        static int Main(string[] argsArray)
+        static int Main(string[] args)
         {
-            System.Collections.Generic.IEnumerable<string> args = argsArray;
-            bool consoleMode = GetConsoleMode(ref args);
-            
             Options options;
             try
             {
@@ -46,11 +45,11 @@ namespace AudioMeterEvent
                 return 1;
             }
 
-            if (consoleMode)
-                new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
-            else
+            if (options.Service)
                 System.ServiceProcess.ServiceBase.Run(new Service(options));
-            
+            else
+                new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+
             return 0;
         }
 
@@ -67,16 +66,6 @@ namespace AudioMeterEvent
             {
                 new AudioMeterEvent(Options.AudioDeviceId, new ConsoleLogger());
             }
-        }
-
-        static bool GetConsoleMode(ref System.Collections.Generic.IEnumerable<string> args)
-        {
-            if (args.Take(1).SequenceEqual(new string[] { "service" }))
-            {
-                args = args.Skip(1);
-                return false;
-            }
-            return true;
         }
     }
 
@@ -99,7 +88,7 @@ namespace AudioMeterEvent
 
         protected override void OnBeforeInstall(System.Collections.IDictionary savedState)
         {
-            var args = new System.Collections.Generic.List<string>();
+            var args = new System.Collections.Generic.List<string>(new string[] { "--service" });
             foreach (System.Collections.DictionaryEntry keyValue in Context.Parameters)
             {
                 if (keyValue.Value == null) continue;
@@ -109,10 +98,14 @@ namespace AudioMeterEvent
                 args.Add("--" + key);
                 args.Add(keyValue.Value.ToString());
             }
-            Context.Parameters["assemblypath"] = QuoteCommandLineArgument(Context.Parameters["assemblypath"]) + " service " + Parser.Default.FormatCommandLine(
+            Context.Parameters["assemblypath"] = QuoteCommandLineArgument(Context.Parameters["assemblypath"]) + " " + Parser.Default.FormatCommandLine(
                 Options.Parse(args,
                     // Ignore InstallUtil parameters such as "assemblypath"
-                    ignoreUnknownArguments: true));
+                    ignoreUnknownArguments: true),
+                configuration => configuration.ShowHidden = true);
+
+            base.OnBeforeInstall(savedState);
+        }
         }
 
         static string QuoteCommandLineArgument(string arg)
