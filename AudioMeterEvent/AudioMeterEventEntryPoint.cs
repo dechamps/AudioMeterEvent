@@ -58,14 +58,14 @@ namespace AudioMeterEvent
         {
             public Service(Options options)
             {
-                this.options = options;
+                Options = options;
             }
 
-            readonly Options options;
+            readonly Options Options;
 
             protected override void OnStart(string[] args)
             {
-                new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+                new AudioMeterEvent(Options.AudioDeviceId, new ConsoleLogger());
             }
         }
 
@@ -85,15 +85,16 @@ namespace AudioMeterEvent
     {
         public Installer()
         {
-            System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
-            serviceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalService;
-            Installers.Add(serviceProcessInstaller);
-
-            System.ServiceProcess.ServiceInstaller serviceInstaller = new System.ServiceProcess.ServiceInstaller();
-            serviceInstaller.ServiceName = "AudioMeterEvent";
-            serviceInstaller.Description = "Raises events based on audio device meter levels.";
-            serviceInstaller.ServicesDependedOn = new string[] { "Audiosrv" };
-            Installers.Add(serviceInstaller);
+            Installers.Add(new System.ServiceProcess.ServiceProcessInstaller
+            {
+                Account = System.ServiceProcess.ServiceAccount.LocalService
+            });
+            Installers.Add(new System.ServiceProcess.ServiceInstaller
+            {
+                ServiceName = "AudioMeterEvent",
+                Description = "Raises events based on audio device meter levels.",
+                ServicesDependedOn = new string[] { "Audiosrv" }
+            });
         }
 
         protected override void OnBeforeInstall(System.Collections.IDictionary savedState)
@@ -114,7 +115,7 @@ namespace AudioMeterEvent
                     ignoreUnknownArguments: true));
         }
 
-        string QuoteCommandLineArgument(string arg)
+        static string QuoteCommandLineArgument(string arg)
         {
             // https://stackoverflow.com/a/6040946/172594
             return "\"" + System.Text.RegularExpressions.Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
