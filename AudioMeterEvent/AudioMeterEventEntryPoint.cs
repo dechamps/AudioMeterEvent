@@ -116,6 +116,7 @@ namespace AudioMeterEvent
             using var serviceManager = new ServiceManager();
             using var service = new ServiceManager.Service(serviceManager, ServiceName);
             service.SetSidType(ServiceManager.ServiceSidType.SERVICE_SID_TYPE_RESTRICTED);
+            service.SetRequiredPrivileges(new string[] { "SeChangeNotifyPrivilege" });
         }
 
         static string QuoteCommandLineArgument(string arg)
