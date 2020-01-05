@@ -53,7 +53,10 @@ namespace AudioMeterEvent
             if (options.Service)
                 System.ServiceProcess.ServiceBase.Run(new Service(options));
             else
+            {
                 new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+                System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+            }
 
             return 0;
         }
