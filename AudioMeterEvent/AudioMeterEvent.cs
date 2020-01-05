@@ -21,6 +21,7 @@
             {
                logger.Log("Sound detected");
             };
+            logger.Log("Audio meter monitoring started");
 
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
         }
