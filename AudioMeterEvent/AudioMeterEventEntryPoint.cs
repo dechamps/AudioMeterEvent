@@ -72,6 +72,8 @@ namespace AudioMeterEvent
     [System.ComponentModel.RunInstaller(true)]
     public class Installer : System.Configuration.Install.Installer
     {
+        const string ServiceName = "AudioMeterEvent";
+
         public Installer()
         {
             Installers.Add(new System.ServiceProcess.ServiceProcessInstaller
@@ -80,7 +82,7 @@ namespace AudioMeterEvent
             });
             Installers.Add(new System.ServiceProcess.ServiceInstaller
             {
-                ServiceName = "AudioMeterEvent",
+                ServiceName = ServiceName,
                 Description = "Raises events based on audio device meter levels.",
                 ServicesDependedOn = new string[] { "Audiosrv" }
             });
@@ -106,6 +108,14 @@ namespace AudioMeterEvent
 
             base.OnBeforeInstall(savedState);
         }
+
+        protected override void OnAfterInstall(System.Collections.IDictionary savedState)
+        {
+            base.OnAfterInstall(savedState);
+
+            using var serviceManager = new ServiceManager();
+            using var service = new ServiceManager.Service(serviceManager, ServiceName);
+            service.SetSidType(ServiceManager.ServiceSidType.SERVICE_SID_TYPE_RESTRICTED);
         }
 
         static string QuoteCommandLineArgument(string arg)
