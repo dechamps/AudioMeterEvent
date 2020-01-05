@@ -36,6 +36,7 @@
     <Compile Include="AudioMeter.cs" />
     <Compile Include="AudioMeterEventEntryPoint.cs" />
     <Compile Include="AudioMeterEvent.cs" />
+    <Compile Include="EventLogLogger.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ServiceManager.cs" />

@@ -31,7 +31,12 @@ namespace AudioMeterEvent
         }
     }
 
-    static class AudioMeterEventEntryPoint
+    static class ServiceInfo
+    {
+        public const string Name = "AudioMeterEvent";
+    }
+
+    public static class AudioMeterEventEntryPoint
     {
         static int Main(string[] args)
         {
@@ -57,6 +62,8 @@ namespace AudioMeterEvent
         {
             public Service(Options options)
             {
+                ServiceName = ServiceInfo.Name;
+                AutoLog = true;
                 Options = options;
             }
 
@@ -64,7 +71,7 @@ namespace AudioMeterEvent
 
             protected override void OnStart(string[] args)
             {
-                new AudioMeterEvent(Options.AudioDeviceId, new ConsoleLogger());
+                new AudioMeterEvent(Options.AudioDeviceId, new EventLogLogger(EventLog));
             }
         }
     }
@@ -72,8 +79,6 @@ namespace AudioMeterEvent
     [System.ComponentModel.RunInstaller(true)]
     public class Installer : System.Configuration.Install.Installer
     {
-        const string ServiceName = "AudioMeterEvent";
-
         public Installer()
         {
             Installers.Add(new System.ServiceProcess.ServiceProcessInstaller
@@ -82,7 +87,7 @@ namespace AudioMeterEvent
             });
             Installers.Add(new System.ServiceProcess.ServiceInstaller
             {
-                ServiceName = ServiceName,
+                ServiceName = ServiceInfo.Name,
                 Description = "Raises events based on audio device meter levels.",
                 ServicesDependedOn = new string[] { "Audiosrv" }
             });
@@ -114,7 +119,7 @@ namespace AudioMeterEvent
             base.OnAfterInstall(savedState);
 
             using var serviceManager = new ServiceManager();
-            using var service = new ServiceManager.Service(serviceManager, ServiceName);
+            using var service = new ServiceManager.Service(serviceManager, ServiceInfo.Name);
             service.SetSidType(ServiceManager.ServiceSidType.SERVICE_SID_TYPE_RESTRICTED);
             service.SetRequiredPrivileges(new string[] { "SeChangeNotifyPrivilege" });
         }
