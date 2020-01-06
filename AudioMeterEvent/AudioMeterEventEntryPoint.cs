@@ -10,7 +10,7 @@ namespace AudioMeterEvent
 {
     class Options
     {
-        [Option("audio-device-id", Required = true)]
+        [Option("audio-device-id", Required = true, HelpText = "The ID of the audio device to monitor. Use AudioDeviceList.exe to find the device ID.")]
         public string AudioDeviceId { get; set; }
 
         [Option("service", Hidden = true)]
