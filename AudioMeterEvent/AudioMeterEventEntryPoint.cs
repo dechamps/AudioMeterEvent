@@ -13,6 +13,9 @@ namespace AudioMeterEvent
         [Option("audio-device-id", Required = true, HelpText = "The ID of the audio device to monitor. Use AudioDeviceList.exe to find the device ID.")]
         public string AudioDeviceId { get; set; }
 
+        [Option("period", HelpText = "How often to check the meter. If zero (the default), use 10x the Windows audio engine device period.")]
+        public System.TimeSpan Period { get; set; }
+
         [Option("service", Hidden = true)]
         public bool Service { get; set; }
 
@@ -54,7 +57,7 @@ namespace AudioMeterEvent
                 System.ServiceProcess.ServiceBase.Run(new Service(options));
             else
             {
-                var audioMeterEvent = new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+                var audioMeterEvent = CreateAudioMeterEvent(options, new ConsoleLogger());
                 audioMeterEvent.Start();
 
                 Microsoft.Win32.SystemEvents.PowerModeChanged += (object sender, Microsoft.Win32.PowerModeChangedEventArgs eventArgs) => {
@@ -90,7 +93,7 @@ namespace AudioMeterEvent
 
             protected override void OnStart(string[] args)
             {
-                AudioMeterEvent = new AudioMeterEvent(Options.AudioDeviceId, new EventLogLogger(EventLog));
+                AudioMeterEvent = CreateAudioMeterEvent(Options, new EventLogLogger(EventLog));
                 AudioMeterEvent.Start();
             }
 
@@ -105,6 +108,11 @@ namespace AudioMeterEvent
             {
                 AudioMeterEvent.Stop();
             }
+        }
+
+        static AudioMeterEvent CreateAudioMeterEvent(Options options, Logger logger)
+        {
+            return new AudioMeterEvent(options.AudioDeviceId, options.Period, logger);
         }
     }
 

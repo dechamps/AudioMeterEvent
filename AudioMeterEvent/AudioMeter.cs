@@ -2,10 +2,13 @@
 {
     sealed class AudioMeter : System.IDisposable
     {
-        public AudioMeter(EndpointVolume.IAudioMeterInformation audioMeterInformation)
+        public AudioMeter(EndpointVolume.IAudioMeterInformation audioMeterInformation, System.TimeSpan Period)
         {
             AudioMeterInformation = audioMeterInformation;
-            Timer.AutoReset = true;
+            Timer = new System.Timers.Timer(Period.TotalMilliseconds)
+            {
+                AutoReset = true,
+            };
             Timer.Elapsed += Timer_Elapsed;
             Timer.Start();
         }
@@ -14,7 +17,7 @@
 
         readonly EndpointVolume.IAudioMeterInformation AudioMeterInformation;
 
-        readonly System.Timers.Timer Timer = new System.Timers.Timer(1000);
+        readonly System.Timers.Timer Timer;
         public void Dispose()
         {
             Timer.Dispose();

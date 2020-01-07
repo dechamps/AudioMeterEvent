@@ -2,7 +2,7 @@
 {
     sealed class AudioMeterEvent
     {
-        public AudioMeterEvent(string audioDeviceId, Logger logger)
+        public AudioMeterEvent(string audioDeviceId, System.TimeSpan period, Logger logger)
         {
             Logger = logger;
 
@@ -17,9 +17,18 @@
                 throw new System.Exception("Unable to get audio device using specified ID", exception);
             }
             IAudioMeterInformation = device.ActivateInterface<EndpointVolume.IAudioMeterInformation>();
+
+            Period = period;
+            if (Period <= System.TimeSpan.Zero)
+            {
+                device.ActivateInterface<AudioClient.IAudioClient>().GetDevicePeriod(out var defaultDevicePeriod, out var minimumDevicePeriod);
+                Period = new System.TimeSpan(defaultDevicePeriod * 10);
+            }
+            Logger.Log("Using period: " + Period.ToString());
         }
 
         readonly Logger Logger;
+        readonly System.TimeSpan Period;
         readonly EndpointVolume.IAudioMeterInformation IAudioMeterInformation;
         readonly object Mutex = new object();
         AudioMeter AudioMeter;
@@ -32,7 +41,7 @@
                 return;
             }
             Logger.Log("Starting audio meter monitoring");
-            var audioMeter = new AudioMeter(IAudioMeterInformation);
+            var audioMeter = new AudioMeter(IAudioMeterInformation, Period);
             lock (Mutex)
             {
                 AudioMeter = audioMeter;

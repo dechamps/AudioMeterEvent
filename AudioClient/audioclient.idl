@@ -1,0 +1,7 @@
+// Mirror the contents of the file from the Windows SDK.
+#include <audioclient.idl>
+
+[uuid(28019C6E-5230-4C6E-8187-120ADC9B9B06)]
+library AudioClient {
+	interface IAudioClient;
+}
