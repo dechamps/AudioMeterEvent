@@ -67,7 +67,6 @@ namespace AudioMeterEvent
 
                 var cancelKeyPressed = new System.Threading.ManualResetEventSlim();
                 System.Console.CancelKeyPress += (object sender, System.ConsoleCancelEventArgs eventArgs) => {
-                    audioMeterEvent.Stop();
                     cancelKeyPressed.Set();
                     eventArgs.Cancel = true;
                 };
