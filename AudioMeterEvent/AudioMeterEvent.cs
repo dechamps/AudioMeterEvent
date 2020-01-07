@@ -16,14 +16,54 @@
             {
                 throw new System.Exception("Unable to get audio device using specified ID", exception);
             }
-
-            new AudioMeter(device.ActivateInterface<EndpointVolume.IAudioMeterInformation>()).SoundDetected += (object sender, System.EventArgs eventArgs) =>
-            {
-                Logger.Log("Sound detected");
-            };
-            Logger.Log("Audio meter monitoring started");
+            IAudioMeterInformation = device.ActivateInterface<EndpointVolume.IAudioMeterInformation>();
         }
 
         readonly Logger Logger;
+        readonly EndpointVolume.IAudioMeterInformation IAudioMeterInformation;
+        readonly object Mutex = new object();
+        AudioMeter AudioMeter;
+
+        public void Start()
+        {
+            if (AudioMeter != null)
+            {
+                Logger.Log("Attempted to Start an already started AudioMeterEvent");
+                return;
+            }
+            Logger.Log("Starting audio meter monitoring");
+            var audioMeter = new AudioMeter(IAudioMeterInformation);
+            lock (Mutex)
+            {
+                AudioMeter = audioMeter;
+            }
+            AudioMeter.SoundDetected += AudioMeter_SoundDetected;
+        }
+
+        public void Stop()
+        {
+            if (AudioMeter == null)
+            {
+                Logger.Log("Attempted to Stop an already stopped AudioMeterEvent");
+                return;
+            }
+            Logger.Log("Stopping audio meter monitoring");
+            AudioMeter audioMeter;
+            lock (Mutex)
+            {
+                audioMeter = AudioMeter;
+                AudioMeter = null;
+            }
+            audioMeter.Dispose();
+        }
+
+        void AudioMeter_SoundDetected(object sender, System.EventArgs eventArgs)
+        {
+            lock (Mutex)
+            {
+                if (sender != AudioMeter) return;  // Don't race against Stop()
+            }
+            Logger.Log("Sound detected");
+        }
     }
 }

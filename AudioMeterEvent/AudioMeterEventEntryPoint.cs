@@ -54,7 +54,14 @@ namespace AudioMeterEvent
                 System.ServiceProcess.ServiceBase.Run(new Service(options));
             else
             {
-                new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+                var audioMeterEvent = new AudioMeterEvent(options.AudioDeviceId, new ConsoleLogger());
+                audioMeterEvent.Start();
+
+                Microsoft.Win32.SystemEvents.PowerModeChanged += (object sender, Microsoft.Win32.PowerModeChangedEventArgs eventArgs) => {
+                    if (eventArgs.Mode == Microsoft.Win32.PowerModes.Suspend) audioMeterEvent.Stop();
+                    if (eventArgs.Mode == Microsoft.Win32.PowerModes.Resume) audioMeterEvent.Start();
+                };
+
                 System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
             }
 
@@ -67,14 +74,24 @@ namespace AudioMeterEvent
             {
                 ServiceName = ServiceInfo.Name;
                 AutoLog = true;
+                CanHandlePowerEvent = true;
                 Options = options;
             }
 
             readonly Options Options;
+            AudioMeterEvent AudioMeterEvent;
 
             protected override void OnStart(string[] args)
             {
-                new AudioMeterEvent(Options.AudioDeviceId, new EventLogLogger(EventLog));
+                AudioMeterEvent = new AudioMeterEvent(Options.AudioDeviceId, new EventLogLogger(EventLog));
+                AudioMeterEvent.Start();
+            }
+
+            protected override bool OnPowerEvent(System.ServiceProcess.PowerBroadcastStatus powerStatus)
+            {
+                if (powerStatus == System.ServiceProcess.PowerBroadcastStatus.Suspend) AudioMeterEvent.Stop();
+                if (powerStatus == System.ServiceProcess.PowerBroadcastStatus.ResumeSuspend) AudioMeterEvent.Start();
+                return base.OnPowerEvent(powerStatus);
             }
         }
     }
