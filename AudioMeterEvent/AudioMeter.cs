@@ -5,19 +5,19 @@
         public AudioMeter(EndpointVolume.IAudioMeterInformation audioMeterInformation)
         {
             AudioMeterInformation = audioMeterInformation;
-            timer.AutoReset = true;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            Timer.AutoReset = true;
+            Timer.Elapsed += Timer_Elapsed;
+            Timer.Start();
         }
 
         public event System.EventHandler SoundDetected = delegate {};
 
         readonly EndpointVolume.IAudioMeterInformation AudioMeterInformation;
 
-        readonly System.Timers.Timer timer = new System.Timers.Timer(1000);
+        readonly System.Timers.Timer Timer = new System.Timers.Timer(1000);
         public void Dispose()
         {
-            timer.Dispose();
+            Timer.Dispose();
         }
 
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)

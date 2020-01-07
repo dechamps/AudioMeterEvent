@@ -4,7 +4,7 @@
     {
         public AudioMeterEvent(string audioDeviceId, Logger logger)
         {
-            this.logger = logger;
+            Logger = logger;
 
             var deviceEnumerator = new MMDeviceAPI.MMDeviceEnumerator();
             MMDeviceAPI.IMMDevice device;
@@ -19,11 +19,11 @@
 
             new AudioMeter(device.ActivateInterface<EndpointVolume.IAudioMeterInformation>()).SoundDetected += (object sender, System.EventArgs eventArgs) =>
             {
-               logger.Log("Sound detected");
+                Logger.Log("Sound detected");
             };
-            logger.Log("Audio meter monitoring started");
+            Logger.Log("Audio meter monitoring started");
         }
 
-        readonly Logger logger;
+        readonly Logger Logger;
     }
 }
