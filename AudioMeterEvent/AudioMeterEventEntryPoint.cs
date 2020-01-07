@@ -62,7 +62,14 @@ namespace AudioMeterEvent
                     if (eventArgs.Mode == Microsoft.Win32.PowerModes.Resume) audioMeterEvent.Start();
                 };
 
-                System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+                var cancelKeyPressed = new System.Threading.ManualResetEventSlim();
+                System.Console.CancelKeyPress += (object sender, System.ConsoleCancelEventArgs eventArgs) => {
+                    audioMeterEvent.Stop();
+                    cancelKeyPressed.Set();
+                    eventArgs.Cancel = true;
+                };
+                cancelKeyPressed.Wait();
+                audioMeterEvent.Stop();
             }
 
             return 0;
@@ -92,6 +99,11 @@ namespace AudioMeterEvent
                 if (powerStatus == System.ServiceProcess.PowerBroadcastStatus.Suspend) AudioMeterEvent.Stop();
                 if (powerStatus == System.ServiceProcess.PowerBroadcastStatus.ResumeSuspend) AudioMeterEvent.Start();
                 return base.OnPowerEvent(powerStatus);
+            }
+
+            protected override void OnStop()
+            {
+                AudioMeterEvent.Stop();
             }
         }
     }
