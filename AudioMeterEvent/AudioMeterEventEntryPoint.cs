@@ -34,11 +34,17 @@ namespace AudioMeterEvent
         [Option("keepalive-duration", HelpText = "(Default: 1 hour) After sound is detected, keep alive for this long.")]
         public System.TimeSpan KeepaliveDuration { get; set; }
 
-        [Option("sounding-uri", HelpText = "Call this URI when sounding (including keepalives).")]
-        public string SoundingUri { get; set; }
+        [Option("event-uri", HelpText = "Call this URI when events occur (sound detected, keepalive, keepalive expiry, standby/shutdown).")]
+        public string Uri { get; set; }
 
-        [Option("stopped-sounding-uri", HelpText = "Call this URI when sounding has stopped (keepalive expiry or standby/shutdown).")]
-        public string StoppedSoundingUri { get; set; }
+        [Option("sounding-payload", Default = "ON", HelpText = "Send this data via a POST request to event-uri when sounding (including keepalives).")]
+        public string SoundingPayload { get; set; }
+
+        [Option("stopped-sounding-payload", Default = "OFF", HelpText = "Send this data via a POST request to event-uri when sounding has stopped (keepalive expiry or standby/shutdown).")]
+        public string StoppedSoundingPayload { get; set; }
+
+        [Option("payload-content-type", Default = "text/plain", HelpText = "Content-Type of the payloads to be sent.")]
+        public string PayloadContentType { get; set; }
 
         [Option("http-username", HelpText = "Provide this username in HTTP requests.")]
         public string HttpUsername { get; set; }
@@ -169,13 +175,11 @@ namespace AudioMeterEvent
                 options.KeepaliveDuration,
                 logger);
 
-            if (options.SoundingUri != null || options.StoppedSoundingUri != null)
+            if (options.Uri != null)
             {
-                var httpClient = new HttpClient(options.HttpUsername, options.HttpPassword, logger);
-                if (options.SoundingUri != null)
-                    audioMeterEvent.Sounding += (object sender, System.EventArgs eventArgs) => { httpClient.SendHttpRequest(options.SoundingUri, logger); };
-                if (options.StoppedSoundingUri != null)
-                    audioMeterEvent.StoppedSounding += (object sender, System.EventArgs eventArgs) => { httpClient.SendHttpRequest(options.StoppedSoundingUri, logger); };
+                var httpClient = new HttpClient(options.PayloadContentType, options.HttpUsername, options.HttpPassword, logger);
+                audioMeterEvent.Sounding += (object sender, System.EventArgs eventArgs) => { httpClient.SendHttpRequest(options.Uri, options.SoundingPayload, logger); };
+                audioMeterEvent.StoppedSounding += (object sender, System.EventArgs eventArgs) => { httpClient.SendHttpRequest(options.Uri, options.StoppedSoundingPayload, logger); };
             }
 
             return audioMeterEvent;

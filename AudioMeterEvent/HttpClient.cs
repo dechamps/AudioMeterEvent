@@ -2,9 +2,10 @@
 {
     class HttpClient
     {
-        public HttpClient(string username, string password, Logger logger)
+        public HttpClient(string payloadContentType, string username, string password, Logger logger)
         {
             Logger = logger;
+            PayloadContentType = payloadContentType;
 
             var httpHandler = new System.Net.Http.HttpClientHandler();
             if (username != "" || password != "")
@@ -13,13 +14,17 @@
         }
 
         readonly Logger Logger;
+        readonly string PayloadContentType;
         readonly System.Net.Http.HttpClient Client;
 
-        public void SendHttpRequest(string uri, Logger logger)
+        public void SendHttpRequest(string uri, string payload, Logger logger)
         {
             try
             {
-                Client.GetAsync(uri).GetAwaiter().GetResult().EnsureSuccessStatusCode();
+                (payload == null ?
+                    Client.GetAsync(uri) :
+                    Client.PostAsync(uri, new System.Net.Http.StringContent(payload, null, PayloadContentType)))
+                    .GetAwaiter().GetResult().EnsureSuccessStatusCode();
             }
             catch (System.Exception exception)
             {
