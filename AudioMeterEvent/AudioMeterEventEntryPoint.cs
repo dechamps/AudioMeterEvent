@@ -50,25 +50,7 @@ namespace AudioMeterEvent
         public string HttpUsername { get; set; }
 
         [Option("http-password-file", HelpText = "Provide the password contained in this file in HTTP requests.")]
-        public string HttpPasswordFile
-        {
-            set
-            {
-                if (value == null)
-                {
-                    HttpPassword = null;
-                    return;
-                }
-                try
-                {
-                    HttpPassword = System.IO.File.ReadAllText(value);
-                }
-                catch (System.Exception exception)
-                {
-                    throw new System.Exception("Unable to read HTTP password file (" + value + "): " + exception.Message, exception);
-                }
-            }
-        }
+        public string HttpPasswordFile { get; set; }
         public string HttpPassword { get; private set; }
 
         [Option("service", Hidden = true)]
@@ -82,10 +64,22 @@ namespace AudioMeterEvent
         public static Options Parse(System.Collections.Generic.IEnumerable<string> args, bool ignoreUnknownArguments = false)
         {
             var helpWriter = new System.IO.StringWriter();
-            return new Parser(config => { config.HelpWriter = helpWriter; config.IgnoreUnknownArguments = ignoreUnknownArguments; })
+            var options = new Parser(config => { config.HelpWriter = helpWriter; config.IgnoreUnknownArguments = ignoreUnknownArguments; })
                 .ParseArguments<Options>(args).MapResult(
                 options => options,
                 _ => throw new UsageException(helpWriter.ToString()));
+            if (options.HttpPasswordFile != null)
+            {
+                try
+                {
+                    options.HttpPassword = System.IO.File.ReadAllText(options.HttpPasswordFile);
+                }
+                catch (System.Exception exception)
+                {
+                    throw new System.Exception("Unable to read HTTP password file (" + options.HttpPasswordFile + ")", exception);
+                }
+            }
+            return options;
         }
     }
 
