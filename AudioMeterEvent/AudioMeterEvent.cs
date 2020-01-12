@@ -66,13 +66,13 @@
             audioMeter.Dispose();
         }
 
-        void AudioMeter_SoundDetected(object sender, System.EventArgs eventArgs)
+        void AudioMeter_SoundDetected(object sender, AudioMeter.SoundDetectedEventArgs eventArgs)
         {
             lock (Mutex)
             {
                 if (sender != AudioMeter) return;  // Don't race against Stop()
             }
-            Logger.Log("Sound detected");
+            Logger.Log("Sound detected: " + eventArgs.PeakFactor);
         }
     }
 }

@@ -14,7 +14,11 @@
             Timer.Start();
         }
 
-        public event System.EventHandler SoundDetected = delegate {};
+        public sealed class SoundDetectedEventArgs : System.EventArgs {
+            public float PeakFactor { get; set; }
+        }
+
+        public event System.EventHandler<SoundDetectedEventArgs> SoundDetected = delegate {};
 
         readonly EndpointVolume.IAudioMeterInformation AudioMeterInformation;
 
@@ -28,7 +32,7 @@
         {
             AudioMeterInformation.GetPeakValue(out var peakFactor);
             if (peakFactor <= 0) return;
-            SoundDetected(this, System.EventArgs.Empty);
+            SoundDetected(this, new SoundDetectedEventArgs{ PeakFactor = peakFactor });
         }
     }
 }
