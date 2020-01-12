@@ -15,7 +15,7 @@
         }
 
         public sealed class SoundDetectedEventArgs : System.EventArgs {
-            public float PeakFactor { get; set; }
+            public SignalRatio PeakLevel { get; set; }
         }
 
         public event System.EventHandler<SoundDetectedEventArgs> SoundDetected = delegate {};
@@ -32,7 +32,7 @@
         {
             AudioMeterInformation.GetPeakValue(out var peakFactor);
             if (peakFactor <= 0) return;
-            SoundDetected(this, new SoundDetectedEventArgs{ PeakFactor = peakFactor });
+            SoundDetected(this, new SoundDetectedEventArgs { PeakLevel = new SignalRatio { Factor = peakFactor } });
         }
     }
 }

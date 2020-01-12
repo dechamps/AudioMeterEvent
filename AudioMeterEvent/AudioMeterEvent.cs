@@ -72,7 +72,7 @@
             {
                 if (sender != AudioMeter) return;  // Don't race against Stop()
             }
-            Logger.Log("Sound detected: " + eventArgs.PeakFactor);
+            Logger.Log("Sound detected: " + eventArgs.PeakLevel);
         }
     }
 }
