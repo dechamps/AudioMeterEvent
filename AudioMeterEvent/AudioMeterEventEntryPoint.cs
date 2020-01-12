@@ -226,7 +226,8 @@ namespace AudioMeterEvent
 
             using var serviceManager = new ServiceManager();
             using var service = new ServiceManager.Service(serviceManager, ServiceInfo.Name);
-            service.SetSidType(ServiceManager.ServiceSidType.SERVICE_SID_TYPE_RESTRICTED);
+            // We could almost use RESTRICTED, but not quite - sadly, that seems to break HTTP requests with a weird "No credentials are available in the security package" error from System.Net.SSPIWrapper.AcquireCredentialsHandle().
+            service.SetSidType(ServiceManager.ServiceSidType.SERVICE_SID_TYPE_UNRESTRICTED);
             service.SetRequiredPrivileges(new string[] { "SeChangeNotifyPrivilege" });
         }
 
