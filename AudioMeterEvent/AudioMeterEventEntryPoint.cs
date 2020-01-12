@@ -34,6 +34,12 @@ namespace AudioMeterEvent
         [Option("keepalive-duration", HelpText = "(Default: 1 hour) After sound is detected, keep alive for this long.")]
         public System.TimeSpan KeepaliveDuration { get; set; }
 
+        [Option("sounding-uri", HelpText = "Call this URI when sounding (including keepalives).")]
+        public string SoundingUri { get; set; }
+
+        [Option("stopped-sounding-uri", HelpText = "Call this URI when sounding has stopped (keepalive expiry or standby/shutdown).")]
+        public string StoppedSoundingUri { get; set; }
+
         [Option("service", Hidden = true)]
         public bool Service { get; set; }
 
@@ -137,9 +143,23 @@ namespace AudioMeterEvent
                 options.KeepaliveInterval,
                 options.KeepaliveDuration,
                 logger);
-            audioMeterEvent.Sounding += (object sender, System.EventArgs eventArgs) => { logger.Log("Running sounding event"); };
-            audioMeterEvent.StoppedSounding += (object sender, System.EventArgs eventArgs) => { logger.Log("Running stopped sounding event"); };
+            if (options.SoundingUri != null)
+                audioMeterEvent.Sounding += (object sender, System.EventArgs eventArgs) => { SendHttpRequest(options.SoundingUri, logger); };
+            if (options.StoppedSoundingUri != null)
+                audioMeterEvent.StoppedSounding += (object sender, System.EventArgs eventArgs) => { SendHttpRequest(options.StoppedSoundingUri, logger); };
             return audioMeterEvent;
+        }
+
+        static readonly System.Net.Http.HttpClient HttpClient = new System.Net.Http.HttpClient();
+        static void SendHttpRequest(string uri, Logger logger)
+        {
+            try
+            {
+                HttpClient.GetAsync(uri).GetAwaiter().GetResult().EnsureSuccessStatusCode();
+            } catch (System.Exception exception)
+            {
+                logger.Log("HTTP request failed: " + exception + " (URI: " + uri + ")");
+            }
         }
     }
 
