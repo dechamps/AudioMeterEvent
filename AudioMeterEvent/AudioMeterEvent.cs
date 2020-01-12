@@ -38,6 +38,10 @@
             Logger.Log("Using minimum level: " + MinimumLevel + ", minimum duration: " + MinimumDuration + ", period: " + Period + ", keepalive interval: " + KeepaliveInterval + ", keepalive duration: " + KeepaliveDuration);
         }
 
+        public event System.EventHandler Sounding = delegate { };
+        public event System.EventHandler StoppedSounding = delegate { };
+        readonly SerializedTaskQueue EventQueue = new SerializedTaskQueue();
+
         readonly SignalRatio MinimumLevel;
         readonly System.TimeSpan MinimumDuration;
         readonly System.TimeSpan KeepaliveInterval;
@@ -72,13 +76,16 @@
                 Logger.Log("Attempted to Stop an already stopped AudioMeterEvent");
                 return;
             }
-            Logger.Log("Stopping audio meter monitoring");
             AudioMeter audioMeter;
             KeepaliveTimers keepaliveTimers;
             lock (Mutex)
             {
                 audioMeter = AudioMeter;
                 AudioMeter = null;
+
+                Logger.Log("Stopped audio meter monitoring");
+                if (CurrentKeepaliveTimers != null) EventQueue.Enqueue(() => { StoppedSounding(this, System.EventArgs.Empty); });
+
                 keepaliveTimers = CurrentKeepaliveTimers;
                 CurrentKeepaliveTimers = null;
             }
@@ -95,8 +102,14 @@
                 if (sender != AudioMeter) return;  // Don't race against Stop()
 
                 initial = CurrentKeepaliveTimers == null;
-                if (initial) CurrentKeepaliveTimers = keepaliveTimers; 
-                else keepaliveTimers = CurrentKeepaliveTimers;
+                if (!initial)
+                    keepaliveTimers = CurrentKeepaliveTimers;
+                else
+                {
+                    Logger.Log("Sounding (initial, " + eventArgs.PeakLevel + ")");
+                    EventQueue.Enqueue(() => { Sounding(this, System.EventArgs.Empty); });
+                    CurrentKeepaliveTimers = keepaliveTimers;
+                }
             }
 
             if (!initial)
@@ -104,8 +117,6 @@
                 keepaliveTimers.ResetDuration();
                 return;
             }
-
-            Logger.Log("Sound detected: " + eventArgs.PeakLevel);
             keepaliveTimers.IntervalElapsed += KeepaliveTimers_IntervalElapsed;
             keepaliveTimers.DurationElapsed += KeepaliveTimers_DurationElapsed;
             keepaliveTimers.Start();
@@ -113,8 +124,13 @@
 
         void KeepaliveTimers_IntervalElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            lock (Mutex) if (sender != CurrentKeepaliveTimers) return;
-            Logger.Log("Keepalive");
+            lock (Mutex)
+            {
+                if (sender != CurrentKeepaliveTimers) return;
+
+                Logger.Log("Sounding (keepalive)");
+                EventQueue.Enqueue(() => { Sounding(this, System.EventArgs.Empty); });
+            }
         }
 
         void KeepaliveTimers_DurationElapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -125,8 +141,10 @@
                 if (sender != CurrentKeepaliveTimers) return;
                 keepaliveTimers = CurrentKeepaliveTimers;
                 CurrentKeepaliveTimers = null;
+
+                Logger.Log("Expiry");
+                EventQueue.Enqueue(() => { StoppedSounding(this, System.EventArgs.Empty); });
             }
-            Logger.Log("Expiry");
             keepaliveTimers.Dispose();
         }
 

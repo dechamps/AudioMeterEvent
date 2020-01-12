@@ -129,7 +129,7 @@ namespace AudioMeterEvent
 
         static AudioMeterEvent CreateAudioMeterEvent(Options options, Logger logger)
         {
-            return new AudioMeterEvent(
+            var audioMeterEvent = new AudioMeterEvent(
                 options.AudioDeviceId,
                 new SignalRatio { FieldDecibels = options.MinimumLevelDecibels },
                 options.MinimumDuration,
@@ -137,6 +137,9 @@ namespace AudioMeterEvent
                 options.KeepaliveInterval,
                 options.KeepaliveDuration,
                 logger);
+            audioMeterEvent.Sounding += (object sender, System.EventArgs eventArgs) => { logger.Log("Running sounding event"); };
+            audioMeterEvent.StoppedSounding += (object sender, System.EventArgs eventArgs) => { logger.Log("Running stopped sounding event"); };
+            return audioMeterEvent;
         }
     }
 
