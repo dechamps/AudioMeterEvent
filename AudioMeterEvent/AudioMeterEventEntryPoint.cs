@@ -10,11 +10,18 @@ namespace AudioMeterEvent
 {
     class Options
     {
+        public Options() {
+            MinimumDuration = System.TimeSpan.FromSeconds(2);
+        }
+
         [Option("audio-device-id", Required = true, HelpText = "The ID of the audio device to monitor. Use AudioDeviceList.exe to find the device ID.")]
         public string AudioDeviceId { get; set; }
 
         [Option("minimum-level-db", Default = -60, HelpText = "Peak signal levels lower than this many decibels will be ignored.")]
         public double MinimumLevelDecibels { get; set; }
+
+        [Option("minimum-duration", HelpText = "(Default: 2 seconds) Only consider signals that stay above minimum level for at least this long.")]
+        public System.TimeSpan MinimumDuration { get; set; }
 
         [Option("period", HelpText = "How often to check the meter. If zero (the default), use 10x the Windows audio engine device period.")]
         public System.TimeSpan Period { get; set; }
@@ -114,7 +121,7 @@ namespace AudioMeterEvent
 
         static AudioMeterEvent CreateAudioMeterEvent(Options options, Logger logger)
         {
-            return new AudioMeterEvent(options.AudioDeviceId, new SignalRatio { FieldDecibels = options.MinimumLevelDecibels }, options.Period, logger);
+            return new AudioMeterEvent(options.AudioDeviceId, new SignalRatio { FieldDecibels = options.MinimumLevelDecibels }, options.MinimumDuration, options.Period, logger);
         }
     }
 

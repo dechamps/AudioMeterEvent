@@ -2,9 +2,10 @@
 {
     sealed class AudioMeterEvent
     {
-        public AudioMeterEvent(string audioDeviceId, SignalRatio minimumLevel, System.TimeSpan period, Logger logger)
+        public AudioMeterEvent(string audioDeviceId, SignalRatio minimumLevel, System.TimeSpan minimumDuration, System.TimeSpan period, Logger logger)
         {
             MinimumLevel = minimumLevel;
+            MinimumDuration = minimumDuration;
             Logger = logger;
 
             var deviceEnumerator = new MMDeviceAPI.MMDeviceEnumerator();
@@ -25,10 +26,11 @@
                 device.ActivateInterface<AudioClient.IAudioClient>().GetDevicePeriod(out var defaultDevicePeriod, out var minimumDevicePeriod);
                 Period = new System.TimeSpan(defaultDevicePeriod * 10);
             }
-            Logger.Log("Using minimum level: " + minimumLevel + ", period: " + Period);
+            Logger.Log("Using minimum level: " + MinimumLevel + ", minimum duration: " + MinimumDuration + ", period: " + Period);
         }
 
         readonly SignalRatio MinimumLevel;
+        readonly System.TimeSpan MinimumDuration;
         readonly Logger Logger;
         readonly System.TimeSpan Period;
         readonly EndpointVolume.IAudioMeterInformation IAudioMeterInformation;
@@ -43,7 +45,7 @@
                 return;
             }
             Logger.Log("Starting audio meter monitoring");
-            var audioMeter = new AudioMeter(IAudioMeterInformation, MinimumLevel, Period);
+            var audioMeter = new AudioMeter(IAudioMeterInformation, MinimumLevel, MinimumDuration, Period);
             lock (Mutex)
             {
                 AudioMeter = audioMeter;
