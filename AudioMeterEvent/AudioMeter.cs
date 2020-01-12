@@ -10,6 +10,7 @@
                 AutoReset = true,
             };
             Timer.Elapsed += Timer_Elapsed;
+            // TODO: we could make this more efficient when no audio is playing by using IAudioSessionNotification and IAudioSessionEvents, so that we don't poll when no audio session is active.
             Timer.Start();
         }
 
