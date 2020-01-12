@@ -13,6 +13,9 @@ namespace AudioMeterEvent
         [Option("audio-device-id", Required = true, HelpText = "The ID of the audio device to monitor. Use AudioDeviceList.exe to find the device ID.")]
         public string AudioDeviceId { get; set; }
 
+        [Option("minimum-level-db", Default = -60, HelpText = "Peak signal levels lower than this many decibels will be ignored.")]
+        public double MinimumLevelDecibels { get; set; }
+
         [Option("period", HelpText = "How often to check the meter. If zero (the default), use 10x the Windows audio engine device period.")]
         public System.TimeSpan Period { get; set; }
 
@@ -111,7 +114,7 @@ namespace AudioMeterEvent
 
         static AudioMeterEvent CreateAudioMeterEvent(Options options, Logger logger)
         {
-            return new AudioMeterEvent(options.AudioDeviceId, options.Period, logger);
+            return new AudioMeterEvent(options.AudioDeviceId, new SignalRatio { FieldDecibels = options.MinimumLevelDecibels }, options.Period, logger);
         }
     }
 

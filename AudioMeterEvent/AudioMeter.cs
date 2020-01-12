@@ -2,9 +2,10 @@
 {
     sealed class AudioMeter : System.IDisposable
     {
-        public AudioMeter(EndpointVolume.IAudioMeterInformation audioMeterInformation, System.TimeSpan Period)
+        public AudioMeter(EndpointVolume.IAudioMeterInformation audioMeterInformation, SignalRatio minimumLevel, System.TimeSpan Period)
         {
             AudioMeterInformation = audioMeterInformation;
+            MinimumLevel = minimumLevel;
             Timer = new System.Timers.Timer(Period.TotalMilliseconds)
             {
                 AutoReset = true,
@@ -20,6 +21,8 @@
 
         public event System.EventHandler<SoundDetectedEventArgs> SoundDetected = delegate {};
 
+        readonly SignalRatio MinimumLevel;
+
         readonly EndpointVolume.IAudioMeterInformation AudioMeterInformation;
 
         readonly System.Timers.Timer Timer;
@@ -31,8 +34,9 @@
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
         {
             AudioMeterInformation.GetPeakValue(out var peakFactor);
-            if (peakFactor <= 0) return;
-            SoundDetected(this, new SoundDetectedEventArgs { PeakLevel = new SignalRatio { Factor = peakFactor } });
+            var peakLevel = new SignalRatio { Factor = peakFactor };
+            if (peakLevel < MinimumLevel) return;
+            SoundDetected(this, new SoundDetectedEventArgs { PeakLevel = peakLevel });
         }
     }
 }
