@@ -38,6 +38,7 @@
     <Compile Include="AudioMeterEvent.cs" />
     <Compile Include="EventLogLogger.cs" />
     <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="HttpClient.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="SerializedTaskQueue.cs" />
     <Compile Include="ServiceManager.cs" />
