@@ -12,6 +12,8 @@ namespace AudioMeterEvent
     {
         public Options() {
             MinimumDuration = System.TimeSpan.FromSeconds(2);
+            KeepaliveInterval = System.TimeSpan.FromSeconds(30);
+            KeepaliveDuration = System.TimeSpan.FromHours(1);
         }
 
         [Option("audio-device-id", Required = true, HelpText = "The ID of the audio device to monitor. Use AudioDeviceList.exe to find the device ID.")]
@@ -25,6 +27,12 @@ namespace AudioMeterEvent
 
         [Option("period", HelpText = "How often to check the meter. If zero (the default), use 10x the Windows audio engine device period.")]
         public System.TimeSpan Period { get; set; }
+
+        [Option("keepalive-interval", HelpText = "(Default: 30 seconds) After sound is detected, keep alive every interval.")]
+        public System.TimeSpan KeepaliveInterval { get; set; }
+
+        [Option("keepalive-duration", HelpText = "(Default: 1 hour) After sound is detected, keep alive for this long.")]
+        public System.TimeSpan KeepaliveDuration { get; set; }
 
         [Option("service", Hidden = true)]
         public bool Service { get; set; }
@@ -121,7 +129,14 @@ namespace AudioMeterEvent
 
         static AudioMeterEvent CreateAudioMeterEvent(Options options, Logger logger)
         {
-            return new AudioMeterEvent(options.AudioDeviceId, new SignalRatio { FieldDecibels = options.MinimumLevelDecibels }, options.MinimumDuration, options.Period, logger);
+            return new AudioMeterEvent(
+                options.AudioDeviceId,
+                new SignalRatio { FieldDecibels = options.MinimumLevelDecibels },
+                options.MinimumDuration,
+                options.Period,
+                options.KeepaliveInterval,
+                options.KeepaliveDuration,
+                logger);
         }
     }
 
