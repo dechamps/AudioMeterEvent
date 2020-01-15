@@ -32,8 +32,10 @@
             Period = period;
             if (Period <= System.TimeSpan.Zero)
             {
-                device.ActivateInterface<AudioClient.IAudioClient>().GetDevicePeriod(out var defaultDevicePeriod, out var minimumDevicePeriod);
-                Period = new System.TimeSpan(defaultDevicePeriod * 10);
+                Period = new System.TimeSpan(minimumDuration.Ticks / 8);
+                device.ActivateInterface<AudioClient.IAudioClient>().GetDevicePeriod(out var defaultDevicePeriod, out var minimumDevicePeriodTicks);
+                var minimumDevicePeriod = new System.TimeSpan(minimumDevicePeriodTicks);
+                if (Period < minimumDevicePeriod) Period = minimumDevicePeriod;
             }
             Logger.Log("Using minimum level: " + MinimumLevel + ", minimum duration: " + MinimumDuration + ", period: " + Period + ", keepalive interval: " + KeepaliveInterval + ", keepalive duration: " + KeepaliveDuration);
         }

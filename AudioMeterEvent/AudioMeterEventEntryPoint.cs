@@ -25,7 +25,7 @@ namespace AudioMeterEvent
         [Option("minimum-duration", HelpText = "(Default: 2 seconds) Only consider signals that stay above minimum level for at least this long.")]
         public System.TimeSpan MinimumDuration { get; set; }
 
-        [Option("period", HelpText = "How often to check the meter. If zero (the default), use 10x the Windows audio engine device period.")]
+        [Option("period", HelpText = "How often to check the meter. If zero (the default), use minimum duration divided by 8, or the Windows device period, whichever is longer.")]
         public System.TimeSpan Period { get; set; }
 
         [Option("keepalive-interval", HelpText = "(Default: 30 seconds) After sound is detected, keep alive every interval.")]
