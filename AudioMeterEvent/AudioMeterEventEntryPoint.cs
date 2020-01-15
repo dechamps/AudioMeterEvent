@@ -106,16 +106,18 @@ namespace AudioMeterEvent
                 System.ServiceProcess.ServiceBase.Run(new Service(options));
             else
             {
-                var audioMeterEvent = CreateAudioMeterEvent(options, new ConsoleLogger());
+                using var audioMeterEvent = CreateAudioMeterEvent(options, new ConsoleLogger());
                 audioMeterEvent.Start();
 
-                Microsoft.Win32.SystemEvents.PowerModeChanged += (object sender, Microsoft.Win32.PowerModeChangedEventArgs eventArgs) => {
+                Microsoft.Win32.SystemEvents.PowerModeChanged += (object sender, Microsoft.Win32.PowerModeChangedEventArgs eventArgs) =>
+                {
                     if (eventArgs.Mode == Microsoft.Win32.PowerModes.Suspend) audioMeterEvent.Stop();
                     if (eventArgs.Mode == Microsoft.Win32.PowerModes.Resume) audioMeterEvent.Start();
                 };
 
                 var cancelKeyPressed = new System.Threading.ManualResetEventSlim();
-                System.Console.CancelKeyPress += (object sender, System.ConsoleCancelEventArgs eventArgs) => {
+                System.Console.CancelKeyPress += (object sender, System.ConsoleCancelEventArgs eventArgs) =>
+                {
                     cancelKeyPressed.Set();
                     eventArgs.Cancel = true;
                 };
@@ -155,6 +157,8 @@ namespace AudioMeterEvent
             protected override void OnStop()
             {
                 AudioMeterEvent.Stop();
+                AudioMeterEvent.Dispose();
+                AudioMeterEvent = null;
             }
         }
 

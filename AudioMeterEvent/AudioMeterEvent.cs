@@ -1,6 +1,6 @@
 ﻿namespace AudioMeterEvent
 {
-    sealed class AudioMeterEvent
+    sealed class AudioMeterEvent : System.IDisposable
     {
         public AudioMeterEvent(
             string audioDeviceId,
@@ -42,7 +42,7 @@
 
         public event System.EventHandler Sounding = delegate { };
         public event System.EventHandler StoppedSounding = delegate { };
-        readonly SerializedTaskQueue EventQueue = new SerializedTaskQueue();
+        readonly SerializedEventQueue EventQueue = new SerializedEventQueue();
 
         readonly SignalRatio MinimumLevel;
         readonly System.TimeSpan MinimumDuration;
@@ -86,7 +86,7 @@
                 AudioMeter = null;
 
                 Logger.Log("Stopped audio meter monitoring");
-                if (CurrentKeepaliveTimers != null) EventQueue.Enqueue(() => { StoppedSounding(this, System.EventArgs.Empty); });
+                if (CurrentKeepaliveTimers != null) EventQueue.EnqueueEvent(() => { StoppedSounding(this, System.EventArgs.Empty); });
 
                 keepaliveTimers = CurrentKeepaliveTimers;
                 CurrentKeepaliveTimers = null;
@@ -109,7 +109,7 @@
                 else
                 {
                     Logger.Log("Sounding (initial, " + eventArgs.PeakLevel + ")");
-                    EventQueue.Enqueue(() => { Sounding(this, System.EventArgs.Empty); });
+                    EventQueue.EnqueueEvent(() => { Sounding(this, System.EventArgs.Empty); });
                     CurrentKeepaliveTimers = keepaliveTimers;
                 }
             }
@@ -131,7 +131,7 @@
                 if (sender != CurrentKeepaliveTimers) return;
 
                 Logger.Log("Sounding (keepalive)");
-                EventQueue.Enqueue(() => { Sounding(this, System.EventArgs.Empty); });
+                EventQueue.EnqueueEvent(() => { Sounding(this, System.EventArgs.Empty); });
             }
         }
 
@@ -145,9 +145,14 @@
                 CurrentKeepaliveTimers = null;
 
                 Logger.Log("Expiry");
-                EventQueue.Enqueue(() => { StoppedSounding(this, System.EventArgs.Empty); });
+                EventQueue.EnqueueEvent(() => { StoppedSounding(this, System.EventArgs.Empty); });
             }
             keepaliveTimers.Dispose();
+        }
+
+        public void Dispose()
+        {
+            EventQueue.Dispose();
         }
 
         sealed class KeepaliveTimers : System.IDisposable
