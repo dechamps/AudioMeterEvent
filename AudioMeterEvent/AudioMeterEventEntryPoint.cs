@@ -123,6 +123,7 @@ namespace AudioMeterEvent
                 };
                 cancelKeyPressed.Wait();
                 audioMeterEvent.Stop();
+                audioMeterEvent.Wait();
             }
 
             return 0;
@@ -157,6 +158,7 @@ namespace AudioMeterEvent
             protected override void OnStop()
             {
                 AudioMeterEvent.Stop();
+                AudioMeterEvent.Wait();
                 AudioMeterEvent.Dispose();
                 AudioMeterEvent = null;
             }

@@ -150,6 +150,11 @@
             keepaliveTimers.Dispose();
         }
 
+        public void Wait()
+        {
+            EventQueue.Wait();
+        }
+
         public void Dispose()
         {
             EventQueue.Dispose();

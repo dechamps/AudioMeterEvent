@@ -20,6 +20,11 @@
             );
         }
 
+        public void Wait()
+        {
+            LastTask.Wait();
+        }
+
         public void Dispose()
         {
             LastCancellationTokenSource.Dispose();
