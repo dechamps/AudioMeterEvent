@@ -2,21 +2,12 @@
 {
     public class SerializedTaskQueue
     {
-        readonly object Mutex = new object();
-        readonly System.Collections.Concurrent.ConcurrentQueue<System.Action> Tasks = new System.Collections.Concurrent.ConcurrentQueue<System.Action>();
+        System.Threading.Tasks.Task LastTask = System.Threading.Tasks.Task.CompletedTask;
 
+        // Runs `action`. If called multiple times, actions are called in strict sequential order.
         public void Enqueue(System.Action action)
         {
-            Tasks.Enqueue(action);
-            System.Threading.Tasks.Task.Run(() =>
-            {
-                lock (Mutex)
-                {
-                    if (!Tasks.TryDequeue(out var action))
-                        throw new System.Exception("SerializedTaskQueue is unexpectedly empty");
-                    action();
-                }
-            });
+            LastTask = LastTask.ContinueWith((System.Threading.Tasks.Task previousTask) => { action(); });
         }
     }
 }
