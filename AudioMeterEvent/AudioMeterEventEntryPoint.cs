@@ -5,6 +5,7 @@
 [assembly: System.Reflection.AssemblyProduct("AudioMeterEvent")]
 [assembly: System.Reflection.AssemblyCompany("Etienne Dechamps")]
 [assembly: System.Reflection.AssemblyCopyright("Etienne Dechamps <etienne@edechamps.fr>")]
+[assembly: System.Reflection.AssemblyVersion("1.0")]
 
 namespace AudioMeterEvent
 {
